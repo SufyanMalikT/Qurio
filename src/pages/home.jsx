@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowBigUp, ArrowBigDown, MessageSquare, Search, Sparkles, Users, Zap } from 'lucide-react';
-
+import {useRef, useState, useEffect} from 'react';
+import PostCard from '../components/PostCard';
 // --- Mock Data for the Feed Visualization ---
 const mockPosts = [
   {
@@ -32,55 +33,6 @@ const mockPosts = [
   },
 ];
 
-// --- Sub-Component: Post Card (matches the styled design) ---
-const PostCard = ({ post }) => (
-  <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-5 hover:border-violet-500/50 transition-all duration-300 shadow-xl group">
-    <div className="flex gap-4">
-      {/* Voting Column */}
-      <div className="flex flex-col items-center gap-1 bg-neutral-950 border border-neutral-800 rounded-full p-2 h-fit mt-1">
-        <button className="text-neutral-600 hover:text-violet-400 transition">
-          <ArrowBigUp className="w-6 h-6" />
-        </button>
-        <span className={`font-bold text-sm ${post.votes >= 0 ? 'text-neutral-200' : 'text-red-400'}`}>
-          {post.votes.toLocaleString()}
-        </span>
-        <button className="text-neutral-600 hover:text-orange-400 transition">
-          <ArrowBigDown className="w-6 h-6" />
-        </button>
-      </div>
-
-      {/* Content Column */}
-      <div className="flex-1">
-        <div className="flex items-center gap-3 mb-2 text-xs text-neutral-500">
-          <span className="font-semibold text-violet-400 bg-violet-950/50 px-2 py-0.5 rounded-full">{post.community}</span>
-          <span>Posted by u/{post.author}</span>
-          <span>• 2h ago</span>
-        </div>
-        
-        <h3 className="text-xl font-semibold text-neutral-100 mb-3 group-hover:text-violet-100 transition">
-          {post.title}
-        </h3>
-
-        <div className="flex items-center gap-2 mb-4">
-          {post.tags.map(tag => (
-            <span key={tag} className="text-xs bg-neutral-800 text-neutral-300 px-3 py-1 rounded-full border border-neutral-700">
-              {tag}
-            </span>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-6 text-neutral-500 text-sm border-t border-neutral-800 pt-3">
-          <div className="flex items-center gap-2 hover:text-neutral-300 cursor-pointer">
-            <MessageSquare className="w-5 h-5" />
-            <span>{post.comments} Comments</span>
-          </div>
-          <div className="hover:text-neutral-300 cursor-pointer">Share</div>
-          <div className="hover:text-neutral-300 cursor-pointer">Save</div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
 
 // --- Sub-Component: Feature Card ---
 const FeatureCard = ({ icon: Icon, title, description }) => (
@@ -95,6 +47,17 @@ const FeatureCard = ({ icon: Icon, title, description }) => (
 
 // --- MAIN LANDING PAGE COMPONENT ---
 const QurioLandingPage = () => {
+  const sectionRef = useRef();
+  
+
+  useEffect(()=>{
+    const observer = new IntersectionObserver((entries)=>{
+      const entry = entries[0];
+      console.log('entry: ',entry.isIntersecting)
+    })
+    observer.observe(sectionRef.current)
+  },[])
+
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-200 font-sans selection:bg-violet-500/30 selection:text-violet-200">
       
@@ -134,23 +97,6 @@ const QurioLandingPage = () => {
       <section className="max-w-[1500px] mx-auto px-6 py-24 border-t border-neutral-800/50">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr,minmax(380px,auto)] gap-12">
           
-          {/* Main Feed Column */}
-          <div className="space-y-6">
-            <div className="flex items-center justify-between mb-8 pb-4 border-b border-neutral-800">
-              <h2 className="text-3xl font-bold tracking-tight text-neutral-100">Trending Curiosity</h2>
-              <div className="flex gap-2 bg-neutral-900 p-1 rounded-full border border-neutral-800 text-sm">
-                {["Hot", "New", "Rising"].map((tab, i) => (
-                  <button key={tab} className={`px-5 py-2 rounded-full font-medium ${i === 0 ? 'bg-violet-600 text-white shadow' : 'text-neutral-400 hover:text-neutral-100'}`}>
-                    {tab}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {mockPosts.map(post => (
-              <PostCard key={post.id} post={post} />
-            ))}
-          </div>
 
           {/* Sidebar Column */}
           <aside className="space-y-8 lg:sticky lg:top-28 lg:h-fit">
@@ -180,13 +126,13 @@ const QurioLandingPage = () => {
       </section>
 
       {/* 4. Feature Section */}
-      <section className="bg-neutral-900/50 py-28 border-y border-neutral-800/50">
+      <section className="feature-section bg-neutral-900/50 py-28 border-y border-neutral-800/50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20">
             <h2 className="text-5xl font-extrabold tracking-tighter text-neutral-100 mb-5">The Hub for Human Knowledge</h2>
             <p className="max-w-xl mx-auto text-lg text-neutral-400 leading-relaxed">Built by curiosity, moderated by community.</p>
           </div>
-          <div className="grid md:grid-cols-3 gap-10">
+          <div ref={sectionRef} className="feature-grid grid md:grid-cols-3 gap-10">
             <FeatureCard 
               icon={MessageSquare} 
               title="Ask Anything" 

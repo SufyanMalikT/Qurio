@@ -3,6 +3,7 @@ import './App.css'
 import { Header } from './components/header'
 import {BrowserRouter, Routes, Route, Link} from 'react-router-dom'
 import  QurioLandingPage  from './pages/home'
+import  UserHome  from './pages/UserHome'
 import LoginPage from './pages/login'
 import isAuthenticated from './services/auth'
 import MainLayout from './Layouts/MainLayout'
@@ -22,6 +23,7 @@ function App() {
         <Route element={<ProtectedRoutes/>}>
           <Route element={<MainLayout />} >
             <Route path='/' element={<QurioLandingPage />} />
+            <Route path='/home' element={<UserHome />} />
           </Route>
         </Route>
       </Routes>
